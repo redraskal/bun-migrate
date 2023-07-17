@@ -1,0 +1,29 @@
+{
+	"name": "bun-template",
+	"description": "TODO",
+	"module": "index.ts",
+	"type": "module",
+	"version": "0.1.0",
+	"author": {
+		"name": "redraskal",
+		"url": "https://github.com/redraskal",
+		"email": "ben@ryben.dev"
+	},
+	"license": "",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/redraskal/"
+	},
+	"bugs": "https://github.com/redraskal//issues",
+	"homepage": "https://github.com/redraskal/",
+	"scripts": {
+		"prettier": "prettier --write ."
+	},
+	"devDependencies": {
+		"bun-types": "latest",
+		"prettier": "^3.0.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}

@@ -1,0 +1,25 @@
+name: prettier
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  prettier:
+    name: prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: setup
+        name: Setup
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - id: install
+        name: Install prettier
+        run: bun i prettier
+      - name: Run prettier
+        id: format
+        run: bun prettier --check .
