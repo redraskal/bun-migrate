@@ -64,7 +64,7 @@ console.log(files);
  */
 
 // apply a single migration
-files[0].apply();
+migrations.apply(files[0]);
 
 // retrieve the last migration's id
 migrations.last(); // 1
