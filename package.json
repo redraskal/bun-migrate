@@ -1,6 +1,6 @@
 {
 	"name": "bun-migrate",
-	"description": "TODO",
+	"description": "A simple SQLite file-based migration system.",
 	"module": "index.ts",
 	"type": "module",
 	"version": "1.0.0",
