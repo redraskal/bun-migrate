@@ -1,6 +1,6 @@
 # bun-migrate
 
-A simple SQLite file-based migration system.
+A simple SQLite file-based migration system for Bun.
 
 ## 1. Install
 
