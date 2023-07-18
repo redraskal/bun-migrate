@@ -23,6 +23,7 @@ export default class Migrations {
 	}
 
 	async get() {
+		if (!(await Bun.file(this.path).exists())) return [];
 		const filenames = await readdir(this.path);
 		return await Promise.all(
 			filenames.map(async (filename) => {
@@ -64,6 +65,7 @@ export default class Migrations {
 
 	async run() {
 		const migrations = await this.get();
+		if (migrations.length == 0) return false;
 		const last = this.last();
 		if (this.log) console.log("🌩️ Running migrations...");
 		for (let i = 0; i < migrations.length; i++) {
@@ -74,6 +76,7 @@ export default class Migrations {
 			}
 		}
 		this.#kv.set("last", `${migrations[migrations.length - 1].id}`);
+		return true;
 	}
 
 	static async run(database: Database, path?: string, log?: boolean) {

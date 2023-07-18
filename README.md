@@ -36,12 +36,15 @@ import Migrations from "bun-migrate";
 
 const database = new Database("bun.sqlite");
 
-await Migrations.run(database); // or
-await Migrations.run(database, "./cool_migrations");
+// run migrations on ./migrations/...
+await Migrations.run(database); // true
 // "🌩️ Running migrations..."
 // "    ⚡ 1.initial.sql"
 // "    ⚡ 2.create_accounts.sql"
 // ...
+
+// or specify a folder
+await Migrations.run(database, "./cool_migrations"); // true
 
 // you can also access the class for additional methods
 const migrations = new Migrations(database, "./cool_migrations", false);
@@ -67,7 +70,7 @@ files[0].apply();
 migrations.last(); // 1
 
 // run all migrations
-await migrations.run();
+await migrations.run(); // true
 ```
 
 This project was created using `bun init` in bun v0.6.15. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
