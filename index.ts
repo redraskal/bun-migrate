@@ -1,6 +1,6 @@
 import Database from "bun:sqlite";
 import KV from "bun-kv";
-import { readdir } from "node:fs/promises";
+import { exists, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 export type Migration = {
@@ -23,7 +23,7 @@ export default class Migrations {
 	}
 
 	async get() {
-		if (!(await Bun.file(this.path).exists())) return [];
+		if (!(await exists(this.path))) return [];
 		const filenames = await readdir(this.path);
 		return await Promise.all(
 			filenames.map(async (filename) => {
