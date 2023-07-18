@@ -1,21 +1,21 @@
 {
-	"name": "bun-template",
+	"name": "bun-migrate",
 	"description": "TODO",
 	"module": "index.ts",
 	"type": "module",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"author": {
 		"name": "redraskal",
 		"url": "https://github.com/redraskal",
 		"email": "ben@ryben.dev"
 	},
-	"license": "",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/redraskal/"
+		"url": "https://github.com/redraskal/bun-migrate"
 	},
-	"bugs": "https://github.com/redraskal//issues",
-	"homepage": "https://github.com/redraskal/",
+	"bugs": "https://github.com/redraskal/bun-migrate/issues",
+	"homepage": "https://github.com/redraskal/bun-migrate",
 	"scripts": {
 		"prettier": "prettier --write ."
 	},
@@ -25,5 +25,8 @@
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"bun-kv": "redraskal/bun-kv#main"
 	}
 }
