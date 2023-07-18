@@ -15,14 +15,14 @@ export default class Migrations {
 	path: string;
 	log: boolean;
 
-	constructor(database: Database, path: string, log?: boolean) {
+	constructor(database: Database, path?: string, log?: boolean) {
 		this.#database = database;
 		this.#kv = new KV(database, "migrations");
-		this.path = path;
+		this.path = path || "./migrations";
 		this.log = log || true;
 	}
 
-	async migrations() {
+	async get() {
 		const filenames = await readdir(this.path);
 		return await Promise.all(
 			filenames.map(async (filename) => {
@@ -63,7 +63,7 @@ export default class Migrations {
 	}
 
 	async run() {
-		const migrations = await this.migrations();
+		const migrations = await this.get();
 		const last = this.last();
 		if (this.log) console.log("🌩️ Running migrations...");
 		for (let i = 0; i < migrations.length; i++) {
@@ -74,5 +74,9 @@ export default class Migrations {
 			}
 		}
 		this.#kv.set("last", `${migrations[migrations.length - 1].id}`);
+	}
+
+	static async run(database: Database, path?: string, log?: boolean) {
+		return await new Migrations(database, path, log).run();
 	}
 }
