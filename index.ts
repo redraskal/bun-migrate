@@ -3,6 +3,8 @@ import KV from "bun-kv";
 import { exists, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
+const decoder = new TextDecoder();
+
 export type Migration = {
 	id: number;
 	filename: string;
@@ -27,10 +29,13 @@ export default class Migrations {
 		const filenames = await readdir(this.path);
 		return await Promise.all(
 			filenames.map(async (filename) => {
+				// https://github.com/oven-sh/bun/issues/2982
+				const file = Bun.file(join(this.path, filename));
+				const reader = await file.stream().getReader().read();
 				return {
 					id: Number(filename.split(".")[0]),
 					filename: filename,
-					content: await Bun.file(join(this.path, filename)).text(),
+					content: decoder.decode(reader.value),
 				} as Migration;
 			})
 		);
@@ -60,7 +65,7 @@ export default class Migrations {
 	}
 
 	last() {
-		return this.#kv.get("last") || -1;
+		return Number(this.#kv.get("last")) || -1;
 	}
 
 	async run() {
