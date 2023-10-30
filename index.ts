@@ -45,7 +45,11 @@ export default class Migrations {
 		this.#database.transaction(() => {
 			const queries = migration.content.split(";");
 			for (let i = 0; i < queries.length; i++) {
-				let query = queries[i].trim();
+				let query = queries[i]
+					.trim()
+					.split("\n")
+					.filter((line) => !line.startsWith("#"))
+					.join("\n");
 				if (query == "") continue;
 				if (query.indexOf("BEGIN") > -1) {
 					for (let end = i + 1; end < queries.length; end++) {
