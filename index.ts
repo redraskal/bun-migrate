@@ -21,7 +21,7 @@ export default class Migrations {
 		this.#database = database;
 		this.#kv = new KV(database, "migrations");
 		this.path = path || "./migrations";
-		this.log = log || true;
+		this.log = log ??= true;
 	}
 
 	async get() {
