@@ -7,7 +7,7 @@
 	"author": {
 		"name": "redraskal",
 		"url": "https://github.com/redraskal",
-		"email": "ben@ryben.dev"
+		"email": "ben@ctos.sh"
 	},
 	"license": "MIT",
 	"repository": {
@@ -20,7 +20,7 @@
 		"prettier": "prettier --write ."
 	},
 	"devDependencies": {
-		"bun-types": "latest",
+		"@types/bun": "^1.0.8",
 		"prettier": "^3.0.0"
 	},
 	"peerDependencies": {

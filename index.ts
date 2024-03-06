@@ -3,92 +3,91 @@ import KV from "bun-kv";
 import { exists, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const decoder = new TextDecoder();
-
 export type Migration = {
 	id: number;
-	filename: string;
+	name: string;
 	content: string;
 };
 
-export default class Migrations {
-	readonly #database: Database;
-	readonly #kv: KV;
-	path: string;
-	log: boolean;
+export type MigrateOptions = {
+	migrations: string | Migration[];
+	log?: boolean;
+};
 
-	constructor(database: Database, path?: string, log?: boolean) {
-		this.#database = database;
-		this.#kv = new KV(database, "migrations");
-		this.path = path || "./migrations";
-		this.log = log ??= true;
+export function withoutComments(str: String) {
+	let result = "";
+	let omit = false;
+	let char: string;
+
+	for (let i = 0; i < str.length; i++) {
+		char = str.charAt(i);
+
+		if (char == "#") {
+			omit = true;
+		} else if (char == "\n") {
+			omit = false;
+		}
+
+		if (!omit) {
+			result += char;
+		}
 	}
 
-	async get() {
-		if (!(await exists(this.path))) return [];
-		const filenames = await readdir(this.path);
-		return await Promise.all(
-			filenames.map(async (filename) => {
-				// https://github.com/oven-sh/bun/issues/2982
-				const file = Bun.file(join(this.path, filename));
-				const reader = await file.stream().getReader().read();
-				return {
-					id: Number(filename.split(".")[0]),
-					filename: filename,
-					content: decoder.decode(reader.value),
-				} as Migration;
-			})
-		);
+	return result;
+}
+
+export async function migrations(path: string) {
+	if (!(await exists(path))) return [];
+
+	const filenames = await readdir(path);
+
+	return await Promise.all(
+		filenames.map(async (filename) => {
+			const file = Bun.file(join(path, filename));
+
+			return {
+				id: Number(filename.split(".")[0]),
+				name: filename,
+				content: withoutComments(await file.text()),
+			} as Migration;
+		})
+	);
+}
+
+export async function migrate(database: Database, options?: MigrateOptions) {
+	const kv = new KV(database, "__migrations__");
+	let last = Number(kv.get("last")) || -1;
+
+	if (!options) {
+		options = {
+			migrations: await migrations("./migrations"),
+			log: true,
+		};
 	}
 
-	apply(migration: Migration) {
-		this.#database.transaction(() => {
-			const queries = migration.content.split(";");
-			for (let i = 0; i < queries.length; i++) {
-				let query = queries[i]
-					.trim()
-					.split("\n")
-					.filter((line) => !line.startsWith("#"))
-					.join("\n");
-				if (query == "") continue;
-				if (query.indexOf("BEGIN") > -1) {
-					for (let end = i + 1; end < queries.length; end++) {
-						if (queries[end].endsWith("END")) {
-							query = queries
-								.slice(i, end + 1)
-								.join(";")
-								.trim();
-							i = end;
-							break;
-						}
-					}
-				}
-				this.#database.exec(query);
-			}
-		})();
+	if (typeof options.migrations === "string") {
+		options.migrations = await migrations(options.migrations);
 	}
 
-	last() {
-		return Number(this.#kv.get("last")) || -1;
+	if (options.migrations.length == 0) return;
+
+	if (options.log) {
+		console.log("🌩️ Running migrations...");
 	}
 
-	async run() {
-		const migrations = await this.get();
-		if (migrations.length == 0) return false;
-		const last = this.last();
-		if (this.log) console.log("🌩️ Running migrations...");
+	database.transaction((migrations: Migration[], log?: boolean) => {
 		for (let i = 0; i < migrations.length; i++) {
 			const migration = migrations[i];
+
 			if (migration.id > last) {
-				if (this.log) console.log(`	⚡ ${migration.filename}`);
-				this.apply(migration);
+				if (log) {
+					console.log(`	⚡ ${migration.name}`);
+				}
+
+				database.run(migration.content);
 			}
 		}
-		this.#kv.set("last", `${migrations[migrations.length - 1].id}`);
-		return true;
-	}
+	})(options.migrations, options.log);
 
-	static async run(database: Database, path?: string, log?: boolean) {
-		return await new Migrations(database, path, log).run();
-	}
+	kv.set("last", `${options.migrations[options.migrations.length - 1].id}`);
 }
