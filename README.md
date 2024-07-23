@@ -32,7 +32,7 @@ Example:
 
 ```ts
 import Database from "bun:sqlite";
-import Migrations from "bun-migrate";
+import { migrate, migrations } from "bun-migrate";
 
 const db = new Database("bun.sqlite");
 
