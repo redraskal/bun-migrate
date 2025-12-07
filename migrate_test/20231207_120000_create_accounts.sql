@@ -1,0 +1,10 @@
+CREATE TABLE accounts (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	username TEXT NOT NULL UNIQUE,
+	email TEXT NOT NULL UNIQUE,
+	password TEXT NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- migration: down
+DROP TABLE accounts;

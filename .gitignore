@@ -1,6 +1,7 @@
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
 bun.lockb
+bun.lock
 
 # Logs
 
@@ -169,3 +170,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.\*
+
+app.db
+test.db

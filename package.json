@@ -17,6 +17,10 @@
 	"bugs": "https://github.com/redraskal/bun-migrate/issues",
 	"homepage": "https://github.com/redraskal/bun-migrate",
 	"scripts": {
+		"migrate:up": "bun migrate.ts up",
+		"migrate:down": "bun migrate.ts down",
+		"migrate:reset": "bun migrate.ts reset",
+		"migrate:status": "bun migrate.ts status",
 		"prettier": "prettier --write ."
 	},
 	"devDependencies": {
@@ -26,7 +30,5 @@
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
-	"dependencies": {
-		"bun-kv": "redraskal/bun-kv#main"
-	}
+	"dependencies": {}
 }
